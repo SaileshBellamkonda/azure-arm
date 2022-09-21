@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "locations": {
+      "value": [
+        {
+          "location": "centralindia",
+          "virtualNetwork": {
+            "addressCidrs": [
+              "10.0.0.0/16"
+            ],
+            "subnets": [
+              {
+                "name": "VM",
+                "addressCidr": "10.0.0.0/24",
+                "associateNetworkSecurityGroup": true
+              },
+              {
+                "name": "WEB",
+                "addressCidr": "10.0.1.0/24",
+                "associateNetworkSecurityGroup": true
+              }
+            ]
+          }
+        },
+        {
+          "location": "southindia",
+          "virtualNetwork": {
+            "addressPrefixes": [
+              "10.1.0.0/16"
+            ],
+            "subnets": [
+              {
+                "name": "VM",
+                "addressPrefix": "10.1.0.0/24"
+              },
+              {
+                "name": "WEB",
+                "addressPrefix": "10.1.1.0/24"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
