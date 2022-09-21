@@ -48,8 +48,7 @@
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]",
       "location": "centralindia",
       "sku": {
-        "name": "[variables('storageAccounts')[copyIndex()].sku]",
-        "tier": "Standard"
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
       },
       "kind": "StorageV2",
       "properties": {
@@ -96,8 +95,7 @@
         "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
       ],
       "sku": {
-        "name": "[variables('storageAccounts')[copyIndex()].sku]",
-        "tier": "Standard"
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
       },
       "properties": {
         "changeFeed": {
@@ -133,16 +131,9 @@
         "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
       ],
       "sku": {
-        "name": "[variables('storageAccounts')[copyIndex()].sku]",
-        "tier": "Standard"
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
       },
       "properties": {
-        "protocolSettings": {
-          "smb": {}
-        },
-        "cors": {
-          "corsRules": []
-        },
         "shareDeleteRetentionPolicy": {
           "enabled": true,
           "days": 7
