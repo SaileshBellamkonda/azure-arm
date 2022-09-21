@@ -6,7 +6,7 @@
   "variables": {
     "location": "[resourceGroup().location]",
     "subscriptionName": "[replace(subscription().displayName,'-', '')]",
-    "storageAccountPrefix": "[concat(variables('location'), variables('subscriptionName'))]",
+    "storageAccountPrefix": "[toLower(concat(variables('location'), variables('subscriptionName')))]",
     "storageAccounts": [
       {
         "suffix": "lrs",
@@ -44,7 +44,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2022-05-01",
+      "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]",
       "location": "centralindia",
       "sku": {
@@ -90,7 +90,7 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts/blobServices",
-      "apiVersion": "2022-05-01",
+      "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
         "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
@@ -127,7 +127,7 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts/fileServices",
-      "apiVersion": "2022-05-01",
+      "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
         "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
@@ -155,7 +155,7 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts/queueServices",
-      "apiVersion": "2022-05-01",
+      "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
         "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
@@ -172,7 +172,7 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts/tableServices",
-      "apiVersion": "2022-05-01",
+      "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
         "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
