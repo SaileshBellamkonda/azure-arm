@@ -12,7 +12,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
-      "name": "[concat(parameters('locations')[copyIndex()].location, '_resources_', uniqueString(resourceGroup().Id))]",
+      "name": "[concat(parameters('locations')[copyIndex()].location, '_network_', uniqueString(resourceGroup().Id))]",
       "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
       "properties": {
         "mode": "Incremental",
@@ -30,6 +30,31 @@
           "virtualNetworkInformation": {
             "value": "[parameters('locations')[copyIndex()].virtualNetwork]"
           }
+        }
+      },
+      "copy": {
+        "name": "locationName",
+        "count": "[length(parameters('locations'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('locations')[copyIndex()].location, '_storage_', uniqueString(resourceGroup().Id))]",
+      "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', concat(parameters('locations')[copyIndex()].location, '_network_', uniqueString(resourceGroup().Id)))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/SaileshBellamkonda/azure-arm/main/arm-storage.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
         }
       },
       "copy": {

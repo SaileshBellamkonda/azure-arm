@@ -27,17 +27,19 @@
         {
           "location": "southindia",
           "virtualNetwork": {
-            "addressPrefixes": [
+            "addressCidrs": [
               "10.1.0.0/16"
             ],
             "subnets": [
               {
                 "name": "VM",
-                "addressPrefix": "10.1.0.0/24"
+                "addressCidr": "10.1.0.0/24",
+                "associateNetworkSecurityGroup": true
               },
               {
                 "name": "WEB",
-                "addressPrefix": "10.1.1.0/24"
+                "addressCidr": "10.1.1.0/24",
+                "associateNetworkSecurityGroup": true
               }
             ]
           }
