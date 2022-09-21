@@ -44,24 +44,24 @@
       "location": "[variables('location')]",
       "properties": {
         "addressSpace": {
-          "addressPrefixes": "[variables('vnetAddressCidrs')]"
+          "addressPrefixes": "[parameters('virtualNetworkInformation').addressCidrs]"
         },
         "virtualNetworkPeerings": [],
         "enableDdosProtection": false
       }
     },
     {
-      "condition": "[variables('subnets')[copyIndex()].associateNetworkSecurityGroup]",
+      "condition": "[parameters('virtualNetworkInformation').subnets[copyIndex()].associateNetworkSecurityGroup]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-11-01",
-      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
+      "name": "[concat(variables('vnetName'), '/', parameters('virtualNetworkInformation').subnets[copyIndex()].name)]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
         "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
       ],
       "properties": {
-        "addressPrefix": "[variables('subnets')[copyIndex()].addressCidr]",
+        "addressPrefix": "[parameters('virtualNetworkInformation').subnets[copyIndex()].addressCidr]",
         "routeTable": {
           "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
         },
@@ -75,20 +75,20 @@
       },
       "copy": {
         "name": "subnetName",
-        "length": "[length(variables('subnets'))]"
+        "length": "[length(parameters('virtualNetworkInformation').subnets)]"
       }
     },
     {
-      "condition": "[not(variables('subnets')[copyIndex()].associateNetworkSecurityGroup)]",
+      "condition": "[not(parameters('virtualNetworkInformation').subnets[copyIndex()].associateNetworkSecurityGroup)]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-11-01",
-      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
+      "name": "[concat(variables('vnetName'), '/', parameters('virtualNetworkInformation').subnets[copyIndex()].name)]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
         "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
       ],
       "properties": {
-        "addressPrefix": "[variables('subnets')[copyIndex()].addressCidr]",
+        "addressPrefix": "[parameters('virtualNetworkInformation').subnets[copyIndex()].addressCidr]",
         "routeTable": {
           "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
         },
@@ -99,7 +99,7 @@
       },
       "copy": {
         "name": "subnetName",
-        "length": "[length(variables('subnets'))]"
+        "length": "[length(parameters('virtualNetworkInformation').subnets)]"
       }
     }
   ],
