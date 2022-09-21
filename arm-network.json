@@ -1,0 +1,105 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkInformation": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "nsgName": "NETWORK-SECURITY-GROUP",
+    "rtName": "ROUTE-TABLE",
+    "vnetName": "VIRTUAL-NETWORK",
+    "vnetAddressCidrs": "[parameters('virtualNetworkInformation').addressCidrs]",
+    "subnets": "[parameters('virtualNetworkInformation').subnets]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2020-11-01",
+      "name": "[variables('nsgName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2020-11-01",
+      "name": "[variables('rtName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "disableBgpRoutePropagation": false,
+        "routes": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2020-11-01",
+      "name": "[variables('vnetName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": "[variables('vnetAddressCidrs')]"
+        },
+        "virtualNetworkPeerings": [],
+        "enableDdosProtection": false
+      }
+    },
+    {
+      "condition": "[variables('subnets')[copyIndex()].associateNetworkSecurityGroup]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2020-11-01",
+      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+        "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+      ],
+      "properties": {
+        "addressPrefix": "[variables('subnets')[copyIndex()].addressCidr]",
+        "routeTable": {
+          "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
+        },
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+        },
+        "serviceEndpoints": [],
+        "delegations": [],
+        "privateEndpointNetworkPolicies": "Disabled",
+        "privateLinkServiceNetworkPolicies": "Enabled"
+      },
+      "copy": {
+        "name": "subnetName",
+        "length": "[length(variables('subnets'))]"
+      }
+    },
+    {
+      "condition": "[not(variables('subnets')[copyIndex()].associateNetworkSecurityGroup)]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2020-11-01",
+      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+        "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
+      ],
+      "properties": {
+        "addressPrefix": "[variables('subnets')[copyIndex()].addressCidr]",
+        "routeTable": {
+          "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
+        },
+        "serviceEndpoints": [],
+        "delegations": [],
+        "privateEndpointNetworkPolicies": "Disabled",
+        "privateLinkServiceNetworkPolicies": "Enabled"
+      },
+      "copy": {
+        "name": "subnetName",
+        "length": "[length(variables('subnets'))]"
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

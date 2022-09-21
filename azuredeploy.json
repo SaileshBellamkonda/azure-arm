@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "locations": {
+      "type": "array"
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
+      "location": "[parameters('locations')[copyIndex()].location]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "arm-resource-group.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "resourceGroupName": {
+            "value": "[concat(parameters('locations')[copyIndex()].location, '_shared')]"
+          },
+          "location": {
+            "value": "[parameters('locations')[copyIndex()].location]"
+          }
+        }
+      },
+      "copy": {
+        "name": "locationName",
+        "count": "[length(parameters('locations'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('locations')[copyIndex()].location, '_resources')]",
+      "location": "[parameters('locations')[copyIndex()].location]",
+      "dependsOn": [
+        "[concat(parameters('locations')[copyIndex()].location, '_shared')]"
+      ],
+      "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "arm-network.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[parameters('locations')[copyIndex()].location]"
+          },
+          "virtualNetworkAddressPrefixes": {
+            "value": "[parameters('locations')[copyIndex()].virtualNetwork]"
+          }
+        }
+      },
+      "copy": {
+        "name": "locationName",
+        "count": "[length(parameters('locations'))]"
+      }
+    }
+  ],
+  "outputs": {}
+}
