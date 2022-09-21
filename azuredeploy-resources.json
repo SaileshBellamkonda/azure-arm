@@ -7,7 +7,8 @@
     }
   },
   "variables": {
-    "uniqueString": "[uniqueString(resourceGroup().Id)]"
+    "uniqueString": "[uniqueString(resourceGroup().Id)]",
+    "resourceGroupName": "[resourceGroup().name]"
   },
   "resources": [
     {
@@ -40,6 +41,9 @@
       "apiVersion": "2021-04-01",
       "name": "[concat(parameters('locations')[copyIndex()].location, '_others_', variables('uniqueString'))]",
       "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
+      "dependsOn": [
+        "[resourceId(variables('resourceGroupName'), 'Microsoft.Resources/deployments', concat(parameters('locations')[copyIndex()].location, '_network_', variables('uniqueString')))]"
+      ],
       "properties": {
         "mode": "Incremental",
         "expressionEvaluationOptions": {
