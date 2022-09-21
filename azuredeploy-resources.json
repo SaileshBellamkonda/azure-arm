@@ -20,7 +20,7 @@
           "scope": "inner"
         },
         "templateLink": {
-          "uri": "[uri(deployment().properties.templateLink.uri, 'arm-network.json')]",
+          "uri": "https://raw.githubusercontent.com/SaileshBellamkonda/azure-arm/main/arm-network.json",
           "contentVersion": "1.0.0.2"
         },
         "parameters": {
