@@ -1,0 +1,255 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+  },
+  "variables": {
+    "tenantId": "[tenant().tenantId]",
+    "location": "[resourceGroup().location]",
+    "subscriptionName": "[replace(subscription().displayName,'-', '')]",
+    "lawName": "LOG-ANALYTICS-WORKSPACE",
+    "appInsights": "APPLICATION-INSIGHTS",
+    "storageAccountPrefix": "[toLower(concat(variables('location'), variables('subscriptionName')))]",
+    "keyVaultName": "[toLower(concat(variables('location'), variables('subscriptionName')))]",
+    "keyvaultUrl": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
+    "storageAccounts": [
+      {
+        "suffix": "lrs",
+        "sku": "Standard_LRS"
+      },
+      {
+        "suffix": "zrs",
+        "sku": "Standard_ZRS"
+      }
+    ]
+  },
+  "functions": [
+    {
+      "namespace": "storage",
+      "members": {
+        "resourceId": {
+          "parameters": [
+            {
+              "name": "namePrefix",
+              "type": "string"
+            },
+            {
+              "name": "nameSuffix",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('namePrefix'), parameters('nameSuffix')))]"
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]",
+      "location": "centralindia",
+      "sku": {
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "dnsEndpointType": "Standard",
+        "defaultToOAuthAuthentication": false,
+        "publicNetworkAccess": "Enabled",
+        "allowCrossTenantReplication": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": true,
+        "allowSharedKeyAccess": true,
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "requireInfrastructureEncryption": false,
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "sku": {
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
+      },
+      "properties": {
+        "changeFeed": {
+          "enabled": false
+        },
+        "restorePolicy": {
+          "enabled": false
+        },
+        "containerDeleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        },
+        "cors": {
+          "corsRules": []
+        },
+        "deleteRetentionPolicy": {
+          "allowPermanentDelete": false,
+          "enabled": true,
+          "days": 7
+        },
+        "isVersioningEnabled": false
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/fileServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "sku": {
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
+      },
+      "properties": {
+        "shareDeleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        }
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/queueServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "properties": {
+        "cors": {
+          "corsRules": []
+        }
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/tableServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "properties": {
+        "cors": {
+          "corsRules": []
+        }
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2015-11-01-preview",
+      "name": "[variables('lawName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "sku": {
+          "name": "pergb2018"
+        },
+        "retentionInDays": 30,
+        "features": {
+          "enableLogAccessUsingOnlyResourcePermissions": true
+        },
+        "workspaceCapping": {
+          "dailyQuotaGb": -1
+        },
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      }
+    },
+    {
+      "type": "microsoft.insights/components",
+      "apiVersion": "2020-02-02-preview",
+      "name": "[variables('appInsights')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('lawName'))]"
+      ],
+      "location": "[variables('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "Flow_Type": "Bluefield",
+        "Request_Source": "rest",
+        "SamplingPercentage": 50,
+        "RetentionInDays": 90,
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('lawName'))]",
+        "IngestionMode": "LogAnalytics",
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[variables('keyVaultName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "Standard"
+        },
+        "tenantId": "[variables('tenantId')]",
+        "accessPolicies": [
+        ],
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": true,
+        "enabledForTemplateDeployment": true,
+        "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 90,
+        "enableRbacAuthorization": false,
+        "enablePurgeProtection": true,
+        "vaultUri": "[variables('keyvaultUrl')]",
+        "provisioningState": "Succeeded",
+        "publicNetworkAccess": "Enabled"
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
