@@ -1,0 +1,184 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "subscriptionName": "[replace(subscription().displayName,'-', '')]",
+    "storageAccountPrefix": "[toLower(concat(variables('location'), variables('subscriptionName')))]",
+    "storageAccounts": [
+      {
+        "suffix": "lrs",
+        "sku": "Standard_LRS"
+      },
+      {
+        "suffix": "zrs",
+        "sku": "Standard_ZRS"
+      }
+    ]
+  },
+  "functions": [
+    {
+      "namespace": "storage",
+      "members": {
+        "resourceId": {
+          "parameters": [
+            {
+              "name": "namePrefix",
+              "type": "string"
+            },
+            {
+              "name": "nameSuffix",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('namePrefix'), parameters('nameSuffix')))]"
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]",
+      "location": "centralindia",
+      "sku": {
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "dnsEndpointType": "Standard",
+        "defaultToOAuthAuthentication": false,
+        "publicNetworkAccess": "Enabled",
+        "allowCrossTenantReplication": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": true,
+        "allowSharedKeyAccess": true,
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "requireInfrastructureEncryption": false,
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "sku": {
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
+      },
+      "properties": {
+        "changeFeed": {
+          "enabled": false
+        },
+        "restorePolicy": {
+          "enabled": false
+        },
+        "containerDeleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        },
+        "cors": {
+          "corsRules": []
+        },
+        "deleteRetentionPolicy": {
+          "allowPermanentDelete": false,
+          "enabled": true,
+          "days": 7
+        },
+        "isVersioningEnabled": false
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/fileServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "sku": {
+        "name": "[variables('storageAccounts')[copyIndex()].sku]"
+      },
+      "properties": {
+        "shareDeleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        }
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/queueServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "properties": {
+        "cors": {
+          "corsRules": []
+        }
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/tableServices",
+      "apiVersion": "2021-06-01",
+      "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
+      "dependsOn": [
+        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+      ],
+      "properties": {
+        "cors": {
+          "corsRules": []
+        }
+      },
+      "copy": {
+        "name": "storageAccount",
+        "count": "[length(variables('storageAccounts'))]"
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
