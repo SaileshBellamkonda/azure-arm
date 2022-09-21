@@ -26,9 +26,8 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
       "name": "[concat(parameters('locations')[copyIndex()].location, '_resources')]",
-      "location": "[parameters('locations')[copyIndex()].location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', concat(parameters('locations')[copyIndex()].location, '_shared'))]"
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', concat(parameters('locations')[copyIndex()].location, '_shared'))]"
       ],
       "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
       "properties": {
@@ -38,8 +37,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "location": {
-            "value": "[parameters('locations')[copyIndex()].location]"
+          "resourceGroupName": {
+            "value": "[concat(parameters('locations')[copyIndex()].location, '_shared')]"
           },
           "virtualNetworkAddressPrefixes": {
             "value": "[parameters('locations')[copyIndex()].virtualNetwork]"
