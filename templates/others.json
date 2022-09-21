@@ -245,7 +245,6 @@
         "enableRbacAuthorization": false,
         "enablePurgeProtection": true,
         "vaultUri": "[variables('keyvaultUrl')]",
-        "provisioningState": "Succeeded",
         "publicNetworkAccess": "Enabled"
       }
     }
