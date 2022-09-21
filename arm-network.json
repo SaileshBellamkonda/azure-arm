@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.1",
+  "contentVersion": "1.0.0.2",
   "parameters": {
     "resourceGroupName": {
       "type": "string"
@@ -51,7 +51,6 @@
       }
     },
     {
-      "condition": "[variables('subnets')[copyIndex()].associateNetworkSecurityGroup]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-11-01",
       "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
@@ -66,7 +65,7 @@
           "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
         },
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+          "id": "[if(variables('subnets')[copyIndex()].associateNetworkSecurityGroup, resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName')), '')]"
         },
         "serviceEndpoints": [],
         "delegations": [],
@@ -76,32 +75,7 @@
       "copy": {
         "name": "subnetName",
         "mode": "serial",
-        "length": "[length(variables('subnets'))]"
-      }
-    },
-    {
-      "condition": "[not(variables('subnets')[copyIndex()].associateNetworkSecurityGroup)]",
-      "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-        "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
-      ],
-      "properties": {
-        "addressPrefix": "[variables('subnets')[copyIndex()].addressCidr]",
-        "routeTable": {
-          "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
-        },
-        "serviceEndpoints": [],
-        "delegations": [],
-        "privateEndpointNetworkPolicies": "Disabled",
-        "privateLinkServiceNetworkPolicies": "Enabled"
-      },
-      "copy": {
-        "name": "subnetName",
-        "mode": "serial",
-        "length": "[length(variables('subnets'))]"
+        "count": "[length(variables('subnets'))]"
       }
     }
   ],
