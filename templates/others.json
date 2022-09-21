@@ -242,8 +242,8 @@
         "enabledForTemplateDeployment": true,
         "enableSoftDelete": true,
         "softDeleteRetentionInDays": 90,
-        "enableRbacAuthorization": false,
-        "enablePurgeProtection": true,
+        "enableRbacAuthorization": true,
+        "enablePurgeProtection": false,
         "vaultUri": "[variables('keyvaultUrl')]",
         "publicNetworkAccess": "Enabled"
       }
