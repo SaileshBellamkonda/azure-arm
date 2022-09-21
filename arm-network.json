@@ -51,17 +51,17 @@
       }
     },
     {
-      "condition": "[variables('subnets')[copyIndex('subnetName')].associateNetworkSecurityGroup]",
+      "condition": "[variables('subnets')[copyIndex()].associateNetworkSecurityGroup]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-11-01",
-      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex('subnetName')].name)]",
+      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
         "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
       ],
       "properties": {
-        "addressPrefix": "[variables('subnets')[copyIndex('subnetName')].addressCidr]",
+        "addressPrefix": "[variables('subnets')[copyIndex()].addressCidr]",
         "routeTable": {
           "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
         },
@@ -80,16 +80,16 @@
       }
     },
     {
-      "condition": "[not(variables('subnets')[copyIndex('subnetName1')].associateNetworkSecurityGroup)]",
+      "condition": "[not(variables('subnets')[copyIndex()].associateNetworkSecurityGroup)]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-11-01",
-      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex('subnetName1')].name)]",
+      "name": "[concat(variables('vnetName'), '/', variables('subnets')[copyIndex()].name)]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
         "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
       ],
       "properties": {
-        "addressPrefix": "[variables('subnets')[copyIndex('subnetName1')].addressCidr]",
+        "addressPrefix": "[variables('subnets')[copyIndex()].addressCidr]",
         "routeTable": {
           "id": "[resourceId('Microsoft.Network/routeTables', variables('rtName'))]"
         },
@@ -99,7 +99,7 @@
         "privateLinkServiceNetworkPolicies": "Enabled"
       },
       "copy": {
-        "name": "subnetName1",
+        "name": "subnetName",
         "mode": "serial",
         "length": "[length(variables('subnets'))]"
       }
