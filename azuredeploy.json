@@ -40,7 +40,7 @@
       "name": "[concat(parameters('locations')[copyIndex()].location, '_resources')]",
       "location": "[parameters('locations')[copyIndex()].location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', concat(parameters('locations')[copyIndex()].location, '_shared'))]"
+        "[resourceId('Microsoft.Resources/resourceGroups', concat(parameters('locations')[copyIndex()].location, '_shared'))]"
       ],
       "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
       "properties": {
