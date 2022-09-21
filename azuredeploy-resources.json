@@ -20,7 +20,8 @@
           "scope": "inner"
         },
         "templateLink": {
-          "relativePath": "arm-network.json"
+          "uri": "https://raw.githubusercontent.com/SaileshBellamkonda/azure-arm/main/arm-network.json",
+          "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "resourceGroupName": {
