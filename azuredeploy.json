@@ -10,18 +10,43 @@
   },
   "resources": [
     {
-      "type": "Microsoft.Resources/resourceGroups",
+      "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
-      "location": "[parameters('locations')[copyIndex()].location]",
       "name": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
-      "tags": {
-        "azRegion": "[parameters('locations')[copyIndex()].location]"
+      "location": "[parameters('locations')[copyIndex()].location]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/SaileshBellamkonda/azure-arm/main/arm-resource-group.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "resourceGroupName": {
+            "value": "[concat(parameters('locations')[copyIndex()].location, '_shared')]"
+          },
+          "location": {
+            "value": "[parameters('locations')[copyIndex()].location]"
+          }
+        }
       },
       "copy": {
         "name": "locationName",
         "count": "[length(parameters('locations'))]"
       }
     },
+    //{
+    //  "type": "Microsoft.Resources/resourceGroups",
+    //  "apiVersion": "2021-04-01",
+    //  "location": "[parameters('locations')[copyIndex()].location]",
+    //  "name": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
+    //  "tags": {
+    //    "azRegion": "[parameters('locations')[copyIndex()].location]"
+    //  },
+    //  "copy": {
+    //    "name": "locationName",
+    //    "count": "[length(parameters('locations'))]"
+    //  }
+    //},
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
