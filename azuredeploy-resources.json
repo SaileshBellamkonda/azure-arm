@@ -25,9 +25,6 @@
           "contentVersion": "1.0.0.2"
         },
         "parameters": {
-          "resourceGroupName": {
-            "value": "[concat(parameters('locations')[copyIndex()].location, '_shared')]"
-          },
           "virtualNetworkInformation": {
             "value": "[parameters('locations')[copyIndex()].virtualNetwork]"
           }
@@ -44,7 +41,7 @@
       "name": "[concat(parameters('locations')[copyIndex()].location, '_storage_', variables('uniqueString'))]",
       "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', concat(parameters('locations')[copyIndex()].location, '_network_', variables('uniqueString')))]"
+        //"[resourceId('Microsoft.Resources/deployments', concat(parameters('locations')[copyIndex()].location, '_network_', variables('uniqueString')))]"
       ],
       "properties": {
         "mode": "Incremental",
