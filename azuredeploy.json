@@ -7,12 +7,13 @@
     }
   },
   "variables": {
+    "uniqueStr": "[uniqueString(subscription().subscriptionId)]"
   },
   "resources": [
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
-      "name": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
+      "name": "[concat(parameters('locations')[copyIndex()].location, '_shared', variables('uniqueStr'))]",
       "location": "[parameters('locations')[copyIndex()].location]",
       "properties": {
         "mode": "Incremental",
@@ -50,9 +51,9 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
-      "name": "[concat(parameters('locations')[copyIndex()].location, '_resources')]",
+      "name": "[concat(parameters('locations')[copyIndex()].location, '_resources', variables('uniqueStr'))]",
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', concat(parameters('locations')[copyIndex()].location, '_shared'))]"
+        "[resourceId(resourceGroup().name,'Microsoft.Resources/deployments', concat(parameters('locations')[copyIndex()].location, '_shared', variables('uniqueStr')))]"
       ],
       "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
       "properties": {
