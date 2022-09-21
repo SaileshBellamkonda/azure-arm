@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -14,8 +14,8 @@
     "nsgName": "NETWORK-SECURITY-GROUP",
     "rtName": "ROUTE-TABLE",
     "vnetName": "VIRTUAL-NETWORK",
-    "vnetAddressCidrs": "[parameters('virtualNetworkInformation').addressCidrs]",
-    "subnets": "[parameters('virtualNetworkInformation').subnets]"
+    "vnetAddressCidrs": "[array(parameters('virtualNetworkInformation').addressCidrs)]",
+    "subnets": "[array(parameters('virtualNetworkInformation').subnets)]"
   },
   "resources": [
     {
