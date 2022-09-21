@@ -32,7 +32,7 @@
         }
       },
       "copy": {
-        "name": "locationName",
+        "name": "deployNetwork",
         "count": "[length(parameters('locations'))]"
       }
     },
@@ -42,7 +42,7 @@
       "name": "[concat(parameters('locations')[copyIndex()].location, '_others_', variables('uniqueString'))]",
       "resourceGroup": "[concat(parameters('locations')[copyIndex()].location, '_shared')]",
       "dependsOn": [
-        "[resourceId(variables('resourceGroupName'), 'Microsoft.Resources/deployments', concat(parameters('locations')[copyIndex()].location, '_network_', variables('uniqueString')))]"
+        "deployNetwork"
       ],
       "properties": {
         "mode": "Incremental",
@@ -57,7 +57,7 @@
         }
       },
       "copy": {
-        "name": "locationName",
+        "name": "deployOthers",
         "count": "[length(parameters('locations'))]"
       }
     }
