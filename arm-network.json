@@ -75,6 +75,7 @@
       },
       "copy": {
         "name": "subnetName",
+        "mode": "serial",
         "length": "[length(parameters('virtualNetworkInformation').subnets)]"
       }
     },
@@ -99,6 +100,7 @@
       },
       "copy": {
         "name": "subnetName",
+        "mode": "serial",
         "length": "[length(parameters('virtualNetworkInformation').subnets)]"
       }
     }
