@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -8,6 +8,12 @@
     "location": "[resourceGroup().location]",
     "subscriptionName": "[replace(subscription().displayName,'-', '')]",
     "lawName": "LOG-ANALYTICS-WORKSPACE",
+    "lawSolutions": [
+      "SQLAdvancedThreatProtection",
+      "SQLVulnerabilityAssessment",
+      "Security",
+      "VMInsights"
+    ],
     "appInsights": "APPLICATION-INSIGHTS",
     "storageAccountPrefix": "[toLower(concat(variables('location'), variables('subscriptionName')))]",
     "keyVaultName": "[toLower(concat(variables('location'), variables('subscriptionName')))]",
@@ -27,7 +33,7 @@
     {
       "namespace": "storage",
       "members": {
-        "resourceId": {
+        "id": {
           "parameters": [
             {
               "name": "namePrefix",
@@ -97,7 +103,7 @@
       "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
-        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+        "[storage.id(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
       ],
       "sku": {
         "name": "[variables('storageAccounts')[copyIndex()].sku]"
@@ -133,7 +139,7 @@
       "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
-        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+        "[storage.id(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
       ],
       "sku": {
         "name": "[variables('storageAccounts')[copyIndex()].sku]"
@@ -154,7 +160,7 @@
       "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
-        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+        "[storage.id(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
       ],
       "properties": {
         "cors": {
@@ -171,7 +177,7 @@
       "apiVersion": "2021-06-01",
       "name": "[concat(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix, '/default')]",
       "dependsOn": [
-        "[storage.resourceId(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
+        "[storage.id(variables('storageAccountPrefix'), variables('storageAccounts')[copyIndex()].suffix)]"
       ],
       "properties": {
         "cors": {
@@ -201,6 +207,31 @@
         },
         "publicNetworkAccessForIngestion": "Enabled",
         "publicNetworkAccessForQuery": "Enabled"
+      }
+    },
+    {
+      "name": "[concat(variables('lawSolutions')[CopyIndex()], '(', variables('lawName'), ')')]",
+      "type": "Microsoft.OperationsManagement/solutions",
+      "apiVersion": "2015-11-01-preview",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('lawName'))]"
+      ],
+      "plan": {
+        "name": "[concat(variables('lawSolutions')[CopyIndex()], '(', variables('lawName'), ')')]",
+        "publisher": "Microsoft",
+        "promotionCode": "",
+        "product": "[concat('OMSGallery/', variables('lawSolutions')[CopyIndex()])]"
+      },
+      "properties": {
+        "workspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', variables('lawName'))]",
+        "containedResources": [
+          "[concat(resourceId('microsoft.operationalinsights/workspaces', variables('lawName')), '/views/', variables('lawSolutions')[CopyIndex()], '(', variables('lawName'), ')')]"
+        ]
+      },
+      "copy": {
+        "name": "solutionAssignment",
+        "count": "[length(variables('lawSolutions'))]"
       }
     },
     {
