@@ -278,7 +278,6 @@
         "enableSoftDelete": true,
         "softDeleteRetentionInDays": 90,
         "enableRbacAuthorization": true,
-        "enablePurgeProtection": false,
         "vaultUri": "[variables('keyvaultUrl')]",
         "publicNetworkAccess": "Enabled"
       }
