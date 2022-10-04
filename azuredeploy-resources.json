@@ -4,6 +4,10 @@
   "parameters": {
     "locations": {
       "type": "array"
+    },
+    "subscriptionName": {
+      "type": "string",
+      "defaultValue": ""
     }
   },
   "variables": {
@@ -54,6 +58,9 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
+          "subscriptionName": {
+            "value": "[parameters('subscriptionName')]"
+          }
         }
       },
       "copy": {
