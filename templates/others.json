@@ -1,12 +1,16 @@
-{
+﻿{
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "subscriptionName": {
+      "type": "string",
+      "defaultValue": ""
+    }
   },
   "variables": {
     "tenantId": "[tenant().tenantId]",
     "location": "[resourceGroup().location]",
-    "subscriptionName": "[replace(subscription().displayName,'-', '')]",
+    "subscriptionName": "[if(empty(parameters('subscriptionName')), replace(subscription().displayName,'-', ''), parameters('subscriptionName'))]",
     "lawName": "LOG-ANALYTICS-WORKSPACE",
     "lawSolutions": [
       "SQLAdvancedThreatProtection",
