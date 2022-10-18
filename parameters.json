@@ -12,12 +12,12 @@
             ],
             "subnets": [
               {
-                "name": "VM",
+                "name": "VM-001",
                 "addressCidr": "10.0.0.0/24",
                 "associateNetworkSecurityGroup": true
               },
               {
-                "name": "WEB",
+                "name": "WEB-001",
                 "addressCidr": "10.0.1.0/24",
                 "associateNetworkSecurityGroup": true
               }
@@ -32,12 +32,12 @@
             ],
             "subnets": [
               {
-                "name": "VM",
+                "name": "VM-001",
                 "addressCidr": "10.1.0.0/24",
                 "associateNetworkSecurityGroup": true
               },
               {
-                "name": "WEB",
+                "name": "WEB-001",
                 "addressCidr": "10.1.1.0/24",
                 "associateNetworkSecurityGroup": true
               }
