@@ -12,13 +12,18 @@
             ],
             "subnets": [
               {
-                "name": "VM-001",
+                "name": "VM-LNX-001",
                 "addressCidr": "10.0.0.0/24",
                 "associateNetworkSecurityGroup": true
               },
               {
-                "name": "WEB-001",
+                "name": "VM-WIN-001",
                 "addressCidr": "10.0.1.0/24",
+                "associateNetworkSecurityGroup": true
+              },
+              {
+                "name": "WEB-001",
+                "addressCidr": "10.0.2.0/24",
                 "associateNetworkSecurityGroup": true
               }
             ]
@@ -32,13 +37,18 @@
             ],
             "subnets": [
               {
-                "name": "VM-001",
+                "name": "VM-LNX-001",
                 "addressCidr": "10.1.0.0/24",
                 "associateNetworkSecurityGroup": true
               },
               {
-                "name": "WEB-001",
+                "name": "VM-WIN-001",
                 "addressCidr": "10.1.1.0/24",
+                "associateNetworkSecurityGroup": true
+              },
+              {
+                "name": "WEB-001",
+                "addressCidr": "10.1.2.0/24",
                 "associateNetworkSecurityGroup": true
               }
             ]
