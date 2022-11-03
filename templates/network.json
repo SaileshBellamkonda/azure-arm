@@ -11,15 +11,28 @@
     "nsgName": "NETWORK-SECURITY-GROUP",
     "rtName": "ROUTE-TABLE",
     "vnetName": "VIRTUAL-NETWORK",
+    "appSgNames": ["APPLICATION-SECURITY-GROUP-RDP", "APPLICATION-SECURITY-GROUP-SSH"],
     "vnetAddressCidrs": "[array(parameters('virtualNetworkInformation').addressCidrs)]",
     "subnets": "[array(parameters('virtualNetworkInformation').subnets)]"
   },
   "resources": [
     {
+      "name": "[variables('appSgNames')[copyIndex()]]",
+      "type": "Microsoft.Network/applicationSecurityGroups",
+      "apiVersion": "2022-05-01",
+      "location": "[variables('location')]",
+      "properties": {},
+      "copy": {
+        "name": "ApplicationSecurityGroup",
+        "count": "[length(variables('appSgNames'))]"
+      }
+    },
+    {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2020-11-01",
       "name": "[variables('nsgName')]",
       "location": "[variables('location')]",
+      "dependsOn": ["ApplicationSecurityGroup"],
       "properties": {
         "securityRules": []
       }
